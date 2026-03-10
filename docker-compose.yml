@@ -1,4 +1,3 @@
-<pre style='color:#1f1c1b;background-color:#ffffff;'>
 services:
   # PostgreSQL Database
   postgres:
@@ -11,7 +10,7 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: [&quot;CMD-SHELL&quot;, &quot;pg_isready -U ${POSTGRES_USER:-postgres}&quot;]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -21,7 +20,7 @@ services:
       - greenvisor-network
     # Production'da port expose etmeyin, sadece internal network'te erişilebilir olmalı
     # ports:
-    #   - &quot;5432:5432&quot;
+    #   - "5432:5432"
 
   # Next.js web application (Production)
   web:
@@ -72,7 +71,7 @@ services:
     networks:
       - greenvisor-network
     healthcheck:
-      test: [&quot;CMD&quot;, &quot;curl&quot;, &quot;-f&quot;, &quot;http://localhost:3000/api/health || exit 1&quot;]
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -90,7 +89,7 @@ services:
     image: greenvisor-cbam-api:latest
     container_name: greenvisor-cbam-api-prod
     ports:
-      - &quot;${CBAM_API_PORT:-8080}:8080&quot;
+      - "${CBAM_API_PORT:-8080}:8080"
     environment:
       - CBAM_API_ALLOW_ORIGINS=${CBAM_API_ALLOW_ORIGINS:-http://localhost:3000,${NEXT_PUBLIC_SITE_URL}}
       - SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
@@ -100,7 +99,7 @@ services:
     networks:
       - greenvisor-network
     healthcheck:
-      test: [&quot;CMD&quot;, &quot;curl&quot;, &quot;-f&quot;, &quot;http://localhost:8080/health || exit 1&quot;]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -118,7 +117,7 @@ services:
     image: greenvisor-ghg-api:latest
     container_name: greenvisor-ghg-api-prod
     ports:
-      - &quot;${GHG_API_PORT:-8081}:8080&quot;
+      - "${GHG_API_PORT:-8081}:8080"
     environment:
       - GHG_API_ALLOW_ORIGINS=${GHG_API_ALLOW_ORIGINS:-http://localhost:3000,${NEXT_PUBLIC_SITE_URL}}
       - SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
@@ -128,7 +127,7 @@ services:
     networks:
       - greenvisor-network
     healthcheck:
-      test: [&quot;CMD&quot;, &quot;curl&quot;, &quot;-f&quot;, &quot;http://localhost:8080/health || exit 1&quot;]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -146,8 +145,8 @@ services:
     image: greenvisor-nginx:latest
     container_name: greenvisor-nginx-prod
     ports:
-      - &quot;80:80&quot;
-      - &quot;443:443&quot;
+      - "80:80"
+      - "443:443"
     environment:
       - DOMAIN=${DOMAIN:-localhost}
     volumes:
@@ -161,7 +160,7 @@ services:
     restart: unless-stopped
     networks:
       - greenvisor-network
-    command: &quot;/bin/sh -c 'while :; do sleep 6h &amp; wait $${!}; nginx -s reload; done &amp; nginx -g \&quot;daemon off;\&quot;'&quot;
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
 
   # Certbot for SSL certificates
   certbot:
@@ -170,7 +169,7 @@ services:
     volumes:
       - certbot-www:/var/www/certbot:rw
       - certbot-conf:/etc/letsencrypt:rw
-    entrypoint: &quot;/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h &amp; wait $${!}; done;'&quot;
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     restart: unless-stopped
     networks:
       - greenvisor-network
@@ -186,4 +185,3 @@ volumes:
 networks:
   greenvisor-network:
     driver: bridge
-</pre>
