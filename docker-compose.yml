@@ -10,6 +10,34 @@ services:
     networks:
       - greenvisor-network
 
+  cbam-api:
+    image: barisgreenvisor/greenvisor:cbam-api-latest
+    container_name: greenvisor-cbam-api
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - CBAM_API_ALLOW_ORIGINS=${CBAM_API_ALLOW_ORIGINS:-http://localhost:3000,${NEXT_PUBLIC_SITE_URL}}
+      - SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - PORT=8080
+    networks:
+      - greenvisor-network
+
+  ghg-api:
+    image: barisgreenvisor/greenvisor:ghg-api-latest
+    container_name: greenvisor-ghg-api
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    environment:
+      - GHG_API_ALLOW_ORIGINS=${GHG_API_ALLOW_ORIGINS:-http://localhost:3000,${NEXT_PUBLIC_SITE_URL}}
+      - SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - PORT=8080
+    networks:
+      - greenvisor-network
+
   nginx:
     image: barisgreenvisor/greenvisor:nginx-security-20250223
     container_name: greenvisor-nginx
@@ -25,6 +53,8 @@ services:
       - ./certbot-www:/var/www/certbot:rw
     depends_on:
       - web
+      - cbam-api
+      - ghg-api
     networks:
       - greenvisor-network
 
